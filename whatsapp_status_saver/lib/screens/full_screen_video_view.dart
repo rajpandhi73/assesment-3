@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class FullScreenVideoView extends StatefulWidget {
   final String url;
@@ -34,8 +34,14 @@ class _FullScreenVideoViewState extends State<FullScreenVideoView> {
 
   Future<void> requestStoragePermission() async {
     if (Platform.isAndroid) {
-      await Permission.storage.request();
-      await Permission.manageExternalStorage.request();
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      final sdkInt = androidInfo.version.sdkInt;
+
+      if (sdkInt >= 30) {
+        await Permission.manageExternalStorage.request();
+      } else {
+        await Permission.storage.request();
+      }
     }
   }
 
@@ -43,13 +49,28 @@ class _FullScreenVideoViewState extends State<FullScreenVideoView> {
     await requestStoragePermission();
 
     try {
-      bool? success = await GallerySaver.saveVideo(widget.url);
-      if (success == true) {
+      final downloadsDir = Directory('/storage/emulated/0/Download');
+
+      if (!downloadsDir.existsSync()) {
+        downloadsDir.createSync(recursive: true);
+      }
+
+      final fileName = widget.url.split('/').last;
+      final newPath = '${downloadsDir.path}/$fileName';
+
+      final sourceFile = File(widget.url);
+      final targetFile = File(newPath);
+
+      if (!await targetFile.exists()) {
+        await sourceFile.copy(newPath);
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Video saved to gallery')),
+          const SnackBar(content: Text('Video saved to Downloads folder')),
         );
       } else {
-        throw Exception('Failed to save video.');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('File already exists in Downloads')),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

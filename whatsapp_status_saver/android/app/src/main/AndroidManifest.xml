@@ -1,24 +1,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.whatsapp_status_saver"
-    tools:ignore="ExtraText">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"
-        tools:ignore="WrongManifestParent" />
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28"
-        tools:ignore="WrongManifestParent" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage,WrongManifestParent" />
+        android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
+    </queries>
 
     <application
-        android:label="whatsapp_status_saver"
         android:name="${applicationName}"
+        android:label="whatsapp_status_saver"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         tools:ignore="MissingApplicationIcon">
+
 
         <activity
             android:name=".MainActivity"
@@ -28,8 +32,7 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize"
-            tools:ignore="WrongManifestParent">
+            android:windowSoftInputMode="adjustResize">
 
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
@@ -45,12 +48,4 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
-
-    <!-- This must be OUTSIDE of the <application> tag -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT" />
-            <data android:mimeType="text/plain" />
-        </intent>
-    </queries>
 </manifest>
